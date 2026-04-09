@@ -1,3 +1,4 @@
+import logo from './assets/prosthetiq_logic_logo.png';
 import { useState } from 'react';
 
 function App() {
@@ -86,24 +87,15 @@ function App() {
   const kLevel = getKLevel();
 
   const getKLevelSentence = () => {
-    if (kLevel === 'K1') {
-      return 'The patient demonstrates K1-level ambulation with household mobility potential.';
-    }
-    if (kLevel === 'K2') {
-      return 'The patient demonstrates K2-level ambulation with limited community mobility.';
-    }
-    if (kLevel === 'K3') {
-      return 'The patient demonstrates K3-level ambulation with variable cadence and community mobility demands.';
-    }
-    if (kLevel === 'K4') {
-      return 'The patient demonstrates K4-level ambulation with high-level activity demands beyond basic ambulation.';
-    }
+    if (kLevel === 'K1') return 'The patient demonstrates K1-level ambulation with household mobility potential.';
+    if (kLevel === 'K2') return 'The patient demonstrates K2-level ambulation with limited community mobility.';
+    if (kLevel === 'K3') return 'The patient demonstrates K3-level ambulation with variable cadence and community mobility demands.';
+    if (kLevel === 'K4') return 'The patient demonstrates K4-level ambulation with high-level activity demands beyond basic ambulation.';
     return 'The patient’s functional level is currently unclear based on the information provided.';
   };
 
   const getClinicalNeedsSentence = () => {
     const selectedNeeds = [];
-
     if (answers.CN001) selectedNeeds.push('improved gait stability');
     if (answers.CN002) selectedNeeds.push('enhanced safety during ambulation to reduce fall risk');
     if (answers.CN003) selectedNeeds.push('additional residual limb protection');
@@ -113,13 +105,11 @@ function App() {
     if (answers.CN007) selectedNeeds.push('improved rollover or smoother gait mechanics');
 
     if (selectedNeeds.length === 0) return '';
-
     return `The patient’s clinical presentation requires ${joinList(selectedNeeds)}.`;
   };
 
   const getEnvironmentalSentence = () => {
     const selectedEnvironment = [];
-
     if (answers.EN001) selectedEnvironment.push('safe navigation of uneven terrain');
     if (answers.EN002) selectedEnvironment.push('regular stair and curb negotiation');
     if (answers.EN003) selectedEnvironment.push('community ambulation');
@@ -127,20 +117,17 @@ function App() {
     if (answers.EN005) selectedEnvironment.push('higher-level or demanding activities');
 
     if (selectedEnvironment.length === 0) return '';
-
     return `The patient’s environment requires ${joinList(selectedEnvironment)}.`;
   };
 
   const getChangeConditionSentence = () => {
     const selectedChanges = [];
-
     if (answers.CC001) selectedChanges.push('the current prosthesis is broken or not functioning properly');
     if (answers.CC002) selectedChanges.push('the current socket is fitting poorly or causing pain');
     if (answers.CC003) selectedChanges.push('the patient has experienced significant weight or residual limb volume change recently');
     if (answers.CC004) selectedChanges.push('the patient’s functional level has changed since the last evaluation');
 
     if (selectedChanges.length === 0) return '';
-
     return `The patient presents with a documented change in physical condition, including ${joinList(selectedChanges)}.`;
   };
 
@@ -170,8 +157,15 @@ function App() {
 
   return (
     <div style={{ padding: '30px', maxWidth: '900px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
-      <h1>ProsthetIQ Logic</h1>
-      <p>Documentation support for prosthetic referrals</p>
+      
+      {/* HEADER */}
+      <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+        <img src={logo} alt="ProsthetIQ Logic Logo" style={{ height: '100px', marginBottom: '10px' }} />
+        <h1 style={{ margin: '0' }}>ProsthetIQ Logic</h1>
+        <p style={{ marginTop: '5px', color: '#666' }}>
+          Working together for better patient outcomes
+        </p>
+      </div>
 
       <h2>Functional Level</h2>
       {questions.map((question) => (
@@ -257,6 +251,7 @@ function App() {
         {changeConditionSentence && <p>{changeConditionSentence}</p>}
         {closingSentence && <p>{closingSentence}</p>}
       </div>
+
     </div>
   );
 }
