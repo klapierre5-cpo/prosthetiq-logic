@@ -339,7 +339,7 @@ function App() {
           borderRadius: '8px',
         }}
       >
-        <h2>Generated Output</h2>
+        <h2>Documentation Guidance for Coverage</h2>
         <p>
           <strong>K-Level:</strong> {kLevel}
         </p>
@@ -349,6 +349,17 @@ function App() {
         {environmentalSentence && <p>{environmentalSentence}</p>}
         {closingSentence && <p>{closingSentence}</p>}
       </div>
+
+      <p
+        style={{
+          marginTop: '15px',
+          fontSize: '12px',
+          color: '#666',
+          textAlign: 'center',
+        }}
+      >
+        ProsthetIQ Logic is intended for educational and clinical reference purposes only. 
+      </p>
     </div>
   );
 }
