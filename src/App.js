@@ -350,16 +350,37 @@ function App() {
         {closingSentence && <p>{closingSentence}</p>}
       </div>
 
-      <p
-        style={{
-          marginTop: '15px',
-          fontSize: '12px',
-          color: '#666',
-          textAlign: 'center',
-        }}
-      >
-        ProsthetIQ Logic is intended for educational and clinical reference purposes only. 
-      </p>
+  <p
+  style={{
+    marginTop: '15px',
+    fontSize: '12px',
+    color: '#666',
+    textAlign: 'center',
+  }}
+>
+  ProsthetIQ Logic is intended for educational and clinical reference purposes only. 
+  For more detailed information, please refer to the Medicare Local Coverage Determination (LCD) and Policy Article currently in effect for lower-limb prosthetic components. <br /><br />
+
+  View LCD L33686 – Lower Limb Prostheses (
+  <a
+    href="https://www.cms.gov/medicare-coverage-database/view/lcd.aspx?LCDId=33787"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    L33686
+  </a>
+  ) <br />
+
+  View Policy Article A52496 – Lower Limb Prostheses (
+  <a
+    href="https://www.cms.gov/medicare-coverage-database/view/article.aspx?articleId=52496"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    A52496
+  </a>
+  )
+</p>
     </div>
   );
 }
