@@ -81,7 +81,8 @@ function App() {
     });
   };
 
-  const clearAll = () => setAnswers({});
+  const clearAll = () =>
+    setAnswers({});
 
   const hasAnyChecked = (arr) => arr.some((q) => !!answers[q.id]);
   const areAllChecked = (arr) => arr.length > 0 && arr.every((q) => !!answers[q.id]);
@@ -111,6 +112,18 @@ function App() {
     fontWeight: '700',
     marginTop: '10px',
     marginBottom: '12px',
+  };
+
+  const helperBoxStyle = {
+    backgroundColor: '#f4f8ff',
+    border: '1px solid #cfe0ff',
+    borderRadius: '8px',
+    padding: '12px 14px',
+    marginTop: '12px',
+    marginBottom: '16px',
+    color: '#1f3f75',
+    fontWeight: '600',
+    lineHeight: '1.5',
   };
 
   const renderGroup = (arr) =>
@@ -225,6 +238,52 @@ function App() {
     return `The patient’s environment requires ${joinList(selected)}.`;
   };
 
+  const getK2K3ClinicalItems = () => {
+    const selected = [];
+    if (answers.CN001) selected.push('improved gait stability');
+    if (answers.CN002) selected.push('enhanced safety during ambulation with reduced fall risk');
+    if (answers.CN003) selected.push('additional residual limb protection');
+    if (answers.CN004) selected.push('shock absorption or impact reduction');
+    if (answers.CN005) selected.push('improved comfort for prolonged prosthetic use');
+    if (answers.CN006) selected.push('greater energy efficiency to reduce fatigue');
+    if (answers.CN007) selected.push('improved rollover and smoother gait mechanics');
+    return selected;
+  };
+
+  const getK2K3EnvironmentalItems = () => {
+    const selected = [];
+    if (answers.EN001) selected.push('uneven terrain such as grass, gravel, or slopes');
+    if (answers.EN002) selected.push('regular stair and curb negotiation');
+    if (answers.EN003) selected.push('community ambulation outside the home');
+    if (answers.EN004) selected.push('long-distance or extended walking demands');
+    if (answers.EN005) selected.push('higher-level functional demands related to work, recreation, or exercise');
+    return selected;
+  };
+
+  const getK2K3TechnologySentence = () => {
+    const kLevel = getKLevel();
+    const clinicalItems = getK2K3ClinicalItems();
+    const environmentalItems = getK2K3EnvironmentalItems();
+
+    if (!(kLevel === 'K2' && answers.K2_K3_YES)) return '';
+
+    const benefitParts = [];
+
+    if (clinicalItems.length) {
+      benefitParts.push(clinicalItems.join(', '));
+    }
+
+    if (environmentalItems.length) {
+      benefitParts.push(environmentalItems.join(', '));
+    }
+
+    const combinedBenefits = benefitParts.length
+      ? joinList(benefitParts)
+      : 'the patient’s documented functional and safety needs';
+
+    return `Although the patient demonstrates functional abilities consistent with a K2 level, K3-level microprocessor knee technology is medically necessary due to ${combinedBenefits}. The selected technology is expected to improve functional health outcomes including stability, safety, and reduction in fall risk while also improving performance of activities of daily living. Lower-level knee systems have been considered and ruled out because they would not sufficiently meet the patient’s functional and medical needs. The prescribed microprocessor knee is indicated for K2 functional level use, includes integrated stumble-recovery technology, and the patient is able to use a device requiring daily charging and is able to understand and respond to error alerts and alarms.`;
+  };
+
   const getClosingSentence = () => {
     const hasPhysicalCondition =
       !!answers.CC001 || !!answers.CC002 || !!answers.CC003 || !!answers.CC004;
@@ -236,7 +295,9 @@ function App() {
     const hasEnvironmentalNeeds =
       !!answers.EN001 || !!answers.EN002 || !!answers.EN003 || !!answers.EN004 || !!answers.EN005;
 
-    if (hasPhysicalCondition || hasClinicalNeeds || hasEnvironmentalNeeds) {
+    const hasK2K3TechnologyNeed = getKLevel() === 'K2' && !!answers.K2_K3_YES;
+
+    if (hasPhysicalCondition || hasClinicalNeeds || hasEnvironmentalNeeds || hasK2K3TechnologyNeed) {
       return 'Based on the patient’s functional level, clinical needs, environmental demands, and documented change in condition, a new prosthetic socket and/or prosthesis is medically necessary to support safe and effective ambulation.';
     }
 
@@ -248,6 +309,7 @@ function App() {
   const physicalConditionSentence = getPhysicalConditionSentence();
   const clinicalNeedsSentence = getClinicalNeedsSentence();
   const environmentalSentence = getEnvironmentalSentence();
+  const k2K3TechnologySentence = getK2K3TechnologySentence();
   const closingSentence = getClosingSentence();
 
   return (
@@ -266,6 +328,38 @@ function App() {
       {showK2 && renderSection('K2 Tasks', k2Questions)}
       {showK3 && renderSection('K3 Tasks', k3Questions)}
       {showK4 && renderSection('K4 Tasks', k4Questions)}
+
+      {kLevel === 'K2' && (
+        <div
+          style={{
+            marginBottom: '20px',
+            padding: '15px',
+            border: '1px solid #ddd',
+            borderRadius: '8px',
+          }}
+        >
+          <h2 style={{ marginTop: 0 }}>K2 Patient Requiring K3 Technology</h2>
+          <p style={instructionStyle}>
+            Is your patient a K2 functional level beneficiary who requires K3 technology?
+          </p>
+          <label>
+            <input
+              type="checkbox"
+              checked={!!answers.K2_K3_YES}
+              onChange={() => handleChange('K2_K3_YES')}
+              style={{ marginRight: '8px' }}
+            />
+            Yes
+          </label>
+
+          {answers.K2_K3_YES && (
+            <div style={helperBoxStyle}>
+              K2 patients who require K3 technology must meet specific documentation criteria.
+              Please select "Yes" in either the clinical or environmental sections below to indicate how this          technology will best support your patient.
+            </div>
+          )}
+        </div>
+      )}
 
       <h2>Physical Condition</h2>
       <p style={instructionStyle}>
@@ -347,40 +441,43 @@ function App() {
         {physicalConditionSentence && <p>{physicalConditionSentence}</p>}
         {clinicalNeedsSentence && <p>{clinicalNeedsSentence}</p>}
         {environmentalSentence && <p>{environmentalSentence}</p>}
+        {k2K3TechnologySentence && <p>{k2K3TechnologySentence}</p>}
         {closingSentence && <p>{closingSentence}</p>}
       </div>
 
-  <p
-  style={{
-    marginTop: '15px',
-    fontSize: '12px',
-    color: '#666',
-    textAlign: 'center',
-  }}
->
-  ProsthetIQ Logic is intended for educational and clinical reference purposes only. 
-  For more detailed information, please refer to the Medicare Local Coverage Determination (LCD) and Policy Article currently in effect for lower-limb prosthetic components. <br /><br />
-
-  View LCD L33686 – Lower Limb Prostheses (
-  <a
-    href="https://www.cms.gov/medicare-coverage-database/view/lcd.aspx?LCDId=33787"
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    L33686
-  </a>
-  ) <br />
-
-  View Policy Article A52496 – Lower Limb Prostheses (
-  <a
-    href="https://www.cms.gov/medicare-coverage-database/view/article.aspx?articleId=52496"
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    A52496
-  </a>
-  )
-</p>
+      <p
+        style={{
+          marginTop: '15px',
+          fontSize: '12px',
+          color: '#666',
+          textAlign: 'center',
+        }}
+      >
+        ProsthetIQ Logic is intended for educational and clinical reference purposes only.
+        For more detailed information, please refer to the Medicare Local Coverage Determination (LCD)
+        and Policy Article currently in effect for lower-limb prosthetic components.
+        <br />
+        <br />
+        View LCD L33787 – Lower Limb Prostheses (
+        <a
+          href="https://www.cms.gov/medicare-coverage-database/view/lcd.aspx?LCDId=33787"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          L33787
+        </a>
+        )
+        <br />
+        View Policy Article A52496 – Lower Limb Prostheses (
+        <a
+          href="https://www.cms.gov/medicare-coverage-database/view/article.aspx?articleId=52496"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          A52496
+        </a>
+        )
+      </p>
     </div>
   );
 }
