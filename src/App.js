@@ -285,24 +285,30 @@ function App() {
   };
 
   const getClosingSentence = () => {
-    const hasPhysicalCondition =
-      !!answers.CC001 || !!answers.CC002 || !!answers.CC003 || !!answers.CC004;
+  const hasPhysicalCondition =
+    !!answers.CC001 || !!answers.CC002 || !!answers.CC003 || !!answers.CC004;
 
-    const hasClinicalNeeds =
-      !!answers.CN001 || !!answers.CN002 || !!answers.CN003 || !!answers.CN004 ||
-      !!answers.CN005 || !!answers.CN006 || !!answers.CN007;
+  const hasClinicalNeeds =
+    !!answers.CN001 || !!answers.CN002 || !!answers.CN003 || !!answers.CN004 ||
+    !!answers.CN005 || !!answers.CN006 || !!answers.CN007;
 
-    const hasEnvironmentalNeeds =
-      !!answers.EN001 || !!answers.EN002 || !!answers.EN003 || !!answers.EN004 || !!answers.EN005;
+  const hasEnvironmentalNeeds =
+    !!answers.EN001 || !!answers.EN002 || !!answers.EN003 || !!answers.EN004 || !!answers.EN005;
 
-    const hasK2K3TechnologyNeed = getKLevel() === 'K2' && !!answers.K2_K3_YES;
+  const hasK2K3TechnologyNeed = getKLevel() === 'K2' && !!answers.K2_K3_YES;
 
-    if (hasPhysicalCondition || hasClinicalNeeds || hasEnvironmentalNeeds || hasK2K3TechnologyNeed) {
-      return 'Based on the patient’s functional level, clinical needs, environmental demands, and documented change in condition, a new prosthetic socket and/or prosthesis is medically necessary to support safe and effective ambulation.';
-    }
+  const isNewAmputee =
+    !answers.CC001 && !answers.CC002 && !answers.CC003 && !answers.CC004;
 
-    return '';
-  };
+  if (isNewAmputee) {
+    return 'The patient presents as a new amputee requiring initial prosthetic intervention in order to regain as much of their pre-amputation functional capacity as possible. Based on the patient’s current functional level, clinical needs, and environmental demands, a prosthesis is medically necessary to support safe ambulation, mobility, and independence.';
+  }
+  if (hasPhysicalCondition || hasClinicalNeeds || hasEnvironmentalNeeds || hasK2K3TechnologyNeed) {
+    return 'Based on the patient’s functional level, clinical needs, environmental demands, and documented change in condition, a new prosthetic socket and/or prosthesis is medically necessary to support safe and effective ambulation.';
+  }
+
+  return '';
+};
 
   const kLevel = getKLevel();
   const kLevelSentence = getKLevelSentence();
@@ -362,10 +368,13 @@ function App() {
       )}
 
       <h2>Physical Condition</h2>
-      <p style={instructionStyle}>
-        Tell us about the prosthesis, are any of these happening?
-      </p>
-      {renderGroup(physicalConditionQuestions)}
+	<p style={instructionStyle}>
+  	Tell us about the current prosthesis. Are any of the following occurring?
+	</p>
+	<div style={helperBoxStyle}>
+  	If none of the following apply, the patient will be treated as a new amputee in the output below.
+	</div>
+	{renderGroup(physicalConditionQuestions)}
 
       <h2>Clinical Needs</h2>
       <p style={instructionStyle}>
