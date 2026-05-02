@@ -360,8 +360,8 @@ function App() {
 
           {answers.K2_K3_YES && (
             <div style={helperBoxStyle}>
-              K2 patients who require K3 technology must meet specific documentation criteria.
-              Please select "Yes" in either the clinical or environmental sections below to indicate how this          technology will best support your patient.
+              Patients who require advanced knee technology must meet specific documentation criteria.  
+		Select applicable clinical or environmental factors below to support medical necessity.
             </div>
           )}
         </div>
