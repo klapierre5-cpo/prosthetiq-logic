@@ -298,8 +298,7 @@ function App() {
 
   const hasK2K3TechnologyNeed = getKLevel() === 'K2' && !!answers.K2_K3_YES;
 
-  const isNewAmputee =
-    !answers.CC001 && !answers.CC002 && !answers.CC003 && !answers.CC004;
+  const isNewAmputee = answers.NEW_PROSTHETIC_USER === 'yes';
 
   if (isNewAmputee) {
     return 'The patient presents as a new amputee requiring initial prosthetic intervention in order to regain as much of their pre-amputation functional capacity as possible. Based on the patient’s current functional level, clinical needs, and environmental demands, a prosthesis is medically necessary to support safe ambulation, mobility, and independence.';
