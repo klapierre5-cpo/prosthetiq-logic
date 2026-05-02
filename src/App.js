@@ -93,6 +93,7 @@ function App() {
 
   const showClinicalDetails = !!answers.CN_YES;
   const showEnvironmentalDetails = !!answers.EN_YES;
+  const isExistingProstheticUser = answers.NEW_PROSTHETIC_USER === 'no';
 
   const joinList = (items) => {
     if (items.length === 0) return '';
@@ -344,9 +345,9 @@ function App() {
             borderRadius: '8px',
           }}
         >
-          <h2 style={{ marginTop: 0 }}>K2 Patient Requiring K3 Technology</h2>
+          <h2 style={{ marginTop: 0 }}>Advanced Knee Technology </h2>
           <p style={instructionStyle}>
-            Is your patient a K2 functional level beneficiary who requires K3 technology?
+            Does this patient require advanced knee technology (such as a microprocessor knee) for safety, 	 	    stability, or improved mobility?
           </p>
           <label>
             <input
@@ -368,13 +369,55 @@ function App() {
       )}
 
       <h2>Physical Condition</h2>
-	<p style={instructionStyle}>
-  	Tell us about the current prosthesis. Are any of the following occurring?
-	</p>
-	<div style={helperBoxStyle}>
-  	If none of the following apply, the patient will be treated as a new amputee in the output below.
-	</div>
-	{renderGroup(physicalConditionQuestions)}
+
+<p style={instructionStyle}>
+  Is the patient a new prosthetic user?
+</p>
+
+<label style={{ display: 'block', marginBottom: '8px' }}>
+  <input
+    type="radio"
+    name="newProstheticUser"
+    checked={answers.NEW_PROSTHETIC_USER === 'yes'}
+    onChange={() =>
+      setAnswers((prev) => ({
+        ...prev,
+        NEW_PROSTHETIC_USER: 'yes',
+        CC001: false,
+        CC002: false,
+        CC003: false,
+        CC004: false,
+      }))
+    }
+    style={{ marginRight: '8px' }}
+  />
+  Yes — new prosthetic user
+</label>
+
+<label style={{ display: 'block', marginBottom: '12px' }}>
+  <input
+    type="radio"
+    name="newProstheticUser"
+    checked={answers.NEW_PROSTHETIC_USER === 'no'}
+    onChange={() =>
+      setAnswers((prev) => ({
+        ...prev,
+        NEW_PROSTHETIC_USER: 'no',
+      }))
+    }
+    style={{ marginRight: '8px' }}
+  />
+  No — patient has an existing prosthesis
+</label>
+
+{isExistingProstheticUser && (
+  <>
+    <p style={subPromptStyle}>
+      If the patient has a device, please select the reason for treatment below.
+    </p>
+    {renderGroup(physicalConditionQuestions)}
+  </>
+)}
 
       <h2>Clinical Needs</h2>
       <p style={instructionStyle}>
