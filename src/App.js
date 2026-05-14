@@ -53,10 +53,10 @@ function App() {
   ];
 
   const physicalConditionQuestions = [
-    { id: 'CC001', text: 'The current prosthesis is broken or not functioning properly' },
-    { id: 'CC002', text: 'The current socket is painful or fitting poorly' },
-    { id: 'CC003', text: 'The patient’s weight or residual limb volume has changed' },
-    { id: 'CC004', text: 'The patient’s functional level has changed' },
+    { id: 'CC001', text: 'The current prosthesis demonstrates mechanical wear, damage, or functional failure' },
+    { id: 'CC002', text: 'The current socket no longer fits appropriately or causes discomfort' },
+    { id: 'CC003', text: 'The patient’s residual limb volume, anatomy, or physical condition has changed' },
+    { id: 'CC004', text: 'The patient’s functional or mobility needs have changed' },
   ];
 
   const [answers, setAnswers] = useState({});
@@ -204,13 +204,13 @@ function App() {
 
   const getPhysicalConditionSentence = () => {
     const selected = [];
-    if (answers.CC001) selected.push('the current prosthesis is broken or not functioning properly');
-    if (answers.CC002) selected.push('the current socket is painful or fitting poorly');
-    if (answers.CC003) selected.push('the patient’s weight or residual limb volume has changed');
-    if (answers.CC004) selected.push('the patient’s functional level has changed');
+    if (answers.CC001) selected.push('the current prosthesis demonstrates mechanical wear, damage, or functional failure');
+    if (answers.CC002) selected.push('the current socket no longer fits appropriately or causes discomfort');
+    if (answers.CC003) selected.push('the patient’s residual limb volume, anatomy, or physical condition has changed');
+    if (answers.CC004) selected.push('the patient’s functional or mobility needs have changed');
 
     if (!selected.length) return '';
-    return `The patient presents with a documented change in condition, including ${joinList(selected)}.`;
+    return `The patient requires prosthetic replacement due to documented physiological change, socket fit deterioration, and/or prosthetic component wear, including ${joinList(selected)}.`;
   };
 
   const getClinicalNeedsSentence = () => {
@@ -266,7 +266,7 @@ function App() {
     const clinicalItems = getK2K3ClinicalItems();
     const environmentalItems = getK2K3EnvironmentalItems();
 
-    if (!(kLevel === 'K2' && answers.K2_K3_YES)) return '';
+    if (!answers.K2_K3_YES) return '';
 
     const benefitParts = [];
 
@@ -282,8 +282,12 @@ function App() {
       ? joinList(benefitParts)
       : 'the patient’s documented functional and safety needs';
 
-    return `Although the patient demonstrates functional abilities consistent with a K2 level, K3-level microprocessor knee technology is medically necessary due to ${combinedBenefits}. The selected technology is expected to improve functional health outcomes including stability, safety, and reduction in fall risk while also improving performance of activities of daily living. Lower-level knee systems have been considered and ruled out because they would not sufficiently meet the patient’s functional and medical needs. The prescribed microprocessor knee is indicated for K2 functional level use, includes integrated stumble-recovery technology, and the patient is able to use a device requiring daily charging and is able to understand and respond to error alerts and alarms.`;
-  };
+    if (kLevel === 'K2') {
+  return `Although the patient demonstrates functional abilities consistent with a K2 level, K3-level microprocessor knee technology is medically necessary due to ${combinedBenefits}. The selected technology is expected to improve functional health outcomes including stability, safety, and reduction in fall risk while also improving performance of activities of daily living. Lower-level knee systems have been considered and ruled out because they would not sufficiently meet the patient’s functional and medical needs. The prescribed microprocessor knee is indicated for K2 functional level use, includes integrated stumble-recovery technology, and the patient is able to use a device requiring daily charging and is able to understand and respond to error alerts and alarms.`;
+}
+
+return `Microprocessor knee technology is medically necessary due to ${combinedBenefits}. The selected technology is expected to improve functional mobility, gait efficiency, stability, safety, and performance of activities of daily living while supporting variable cadence ambulation and community mobility demands. Lower-level knee systems have been considered and ruled out because they would not sufficiently meet the patient’s functional and medical needs. The patient demonstrates the cognitive ability and functional capacity necessary to safely and effectively utilize advanced prosthetic knee technology.`;
+};
 
   const getClosingSentence = () => {
   const hasPhysicalCondition =
@@ -335,7 +339,7 @@ function App() {
       {showK3 && renderSection('K3 Tasks', k3Questions)}
       {showK4 && renderSection('K4 Tasks', k4Questions)}
 
-      {kLevel === 'K2' && (
+      {(kLevel === 'K2' || kLevel === 'K3' || kLevel === 'K4') && (
         <div
           style={{
             marginBottom: '20px',
