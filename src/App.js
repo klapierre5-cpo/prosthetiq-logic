@@ -61,6 +61,28 @@ function App() {
 
   const [answers, setAnswers] = useState({});
 
+const amputationLevels = [
+  'Partial Foot/Symes',
+  'BK',
+  'AK/KD',
+  'Hip-Level',
+];
+
+const sides = [
+  'Left',
+  'Right',
+  'Bilateral',
+];
+
+const etiologies = [
+  'Trauma',
+  'Congenital Defect',
+  'Vascular Compromise',
+  'Diabetes',
+  'Infection',
+  'Other',
+];
+
   const handleChange = (id) => {
     setAnswers((prev) => ({
       ...prev,
@@ -81,8 +103,13 @@ function App() {
     });
   };
 
-  const clearAll = () =>
-    setAnswers({});
+  const clearAll = () => {
+  setAnswers({
+    AMPUTATION_LEVEL: '',
+    SIDE: '',
+    ETIOLOGY: '',
+  });
+};
 
   const hasAnyChecked = (arr) => arr.some((q) => !!answers[q.id]);
   const areAllChecked = (arr) => arr.length > 0 && arr.every((q) => !!answers[q.id]);
@@ -114,6 +141,15 @@ function App() {
     marginTop: '10px',
     marginBottom: '12px',
   };
+
+const sectionBoxStyle = {
+  marginTop: '25px',
+  marginBottom: '25px',
+  padding: '20px',
+  border: '2px solid #d9e7ff',
+  borderRadius: '10px',
+  backgroundColor: '#fbfdff',
+};
 
   const helperBoxStyle = {
     backgroundColor: '#f4f8ff',
@@ -201,6 +237,31 @@ function App() {
     }
     return 'The patient’s functional level is currently unclear based on the information provided.';
   };
+
+const getHistorySentence = () => {
+  const details = [];
+
+  if (answers.AMPUTATION_LEVEL) {
+    details.push(`${answers.AMPUTATION_LEVEL} amputation`);
+  }
+
+  if (answers.SIDE) {
+    details.push(`${answers.SIDE.toLowerCase()} side`);
+  }
+
+  if (answers.ETIOLOGY) {
+  const etiologyText =
+    answers.ETIOLOGY === 'Diabetic'
+      ? 'diabetes'
+      : answers.ETIOLOGY.toLowerCase();
+
+  details.push(`secondary to ${etiologyText}`);
+}
+
+  if (!details.length) return '';
+
+  return `The patient presents with a ${details.join(', ')}.`;
+};
 
   const getPhysicalConditionSentence = () => {
     const selected = [];
@@ -305,8 +366,8 @@ return `Microprocessor knee technology is medically necessary due to ${combinedB
   const isNewAmputee = answers.NEW_PROSTHETIC_USER === 'yes';
 
   if (isNewAmputee) {
-    return 'The patient presents as a new amputee requiring initial prosthetic intervention in order to regain as much of their pre-amputation functional capacity as possible. Based on the patient’s current functional level, clinical needs, and environmental demands, a prosthesis is medically necessary to support safe ambulation, mobility, and independence.';
-  }
+  return 'Based on the patient’s current functional level, clinical needs, and environmental demands, a prosthesis is medically necessary to support safe ambulation, mobility, and independence.';
+} 
   if (hasPhysicalCondition || hasClinicalNeeds || hasEnvironmentalNeeds || hasK2K3TechnologyNeed) {
     return 'Based on the patient’s functional level, clinical needs, environmental demands, and documented change in condition, a new prosthetic socket and/or prosthesis is medically necessary to support safe and effective ambulation.';
   }
@@ -316,11 +377,31 @@ return `Microprocessor knee technology is medically necessary due to ${combinedB
 
   const kLevel = getKLevel();
   const kLevelSentence = getKLevelSentence();
+  const historySentence = getHistorySentence();
   const physicalConditionSentence = getPhysicalConditionSentence();
   const clinicalNeedsSentence = getClinicalNeedsSentence();
   const environmentalSentence = getEnvironmentalSentence();
   const k2K3TechnologySentence = getK2K3TechnologySentence();
   const closingSentence = getClosingSentence();
+
+  const noteText = [
+  'History',
+  historySentence,
+  kLevelSentence,
+  answers.NEW_PROSTHETIC_USER === 'yes'
+    ? 'The patient presents as a new amputee requiring initial prosthetic intervention in order to regain as much of their pre-amputation functional capacity as possible.'
+    : '',
+  physicalConditionSentence,
+  '',
+  'Documentation Guidance',
+  clinicalNeedsSentence,
+  environmentalSentence,
+  k2K3TechnologySentence,
+  closingSentence ||
+    'At this time, no additional clinical or environmental considerations requiring specialized prosthetic intervention have been identified based on the information provided.',
+]
+  .filter(Boolean)
+  .join('\n\n');
 
   return (
     <div style={{ padding: '30px', maxWidth: '900px', margin: '0 auto' }}>
@@ -329,7 +410,69 @@ return `Microprocessor knee technology is medically necessary due to ${combinedB
         <h1>ProsthetIQ Logic</h1>
       </div>
 
-      <h2>Functional Level</h2>
+      <div style={sectionBoxStyle}>
+  <h2>History</h2>
+<div style={{ marginBottom: '20px' }}>
+  <h3>Amputation Level</h3>
+  <select
+    value={answers.AMPUTATION_LEVEL || ''}
+    onChange={(e) =>
+      setAnswers((prev) => ({
+        ...prev,
+        AMPUTATION_LEVEL: e.target.value,
+      }))
+    }
+    style={{ padding: '8px', width: '100%', maxWidth: '300px' }}
+  >
+    <option value="">Select amputation level</option>
+    {amputationLevels.map((level) => (
+      <option key={level} value={level}>
+        {level}
+      </option>
+    ))}
+  </select>
+
+  <h3 style={{ marginTop: '20px' }}>Side</h3>
+  <select
+    value={answers.SIDE || ''}
+    onChange={(e) =>
+      setAnswers((prev) => ({
+        ...prev,
+        SIDE: e.target.value,
+      }))
+    }
+    style={{ padding: '8px', width: '100%', maxWidth: '300px' }}
+  >
+    <option value="">Select side</option>
+    {sides.map((side) => (
+      <option key={side} value={side}>
+        {side}
+      </option>
+    ))}
+  </select>
+
+  <h3 style={{ marginTop: '20px' }}>Etiology</h3>
+  <select
+    value={answers.ETIOLOGY || ''}
+    onChange={(e) =>
+      setAnswers((prev) => ({
+        ...prev,
+        ETIOLOGY: e.target.value,
+      }))
+    }
+    style={{ padding: '8px', width: '100%', maxWidth: '300px' }}
+  >
+    <option value="">Select etiology</option>
+    {etiologies.map((etiology) => (
+      <option key={etiology} value={etiology}>
+        {etiology}
+      </option>
+    ))}
+  </select>
+</div>
+
+
+  <h3>Functional Level</h3>
       <p style={instructionStyle}>
         Check tasks. Next level appears only when all are selected.
       </p>
@@ -422,8 +565,13 @@ return `Microprocessor knee technology is medically necessary due to ${combinedB
   </>
 )}
 
-      <h2>Clinical Needs</h2>
-      <p style={instructionStyle}>
+</div>
+
+      <div style={sectionBoxStyle}>
+  <h2>Documentation Guidance</h2>
+
+  <h3>Clinical Needs</h3>      
+	<p style={instructionStyle}>
         Does the patient have any clinical conditions that require special attention?
       </p>
       <label>
@@ -443,7 +591,7 @@ return `Microprocessor knee technology is medically necessary due to ${combinedB
         </>
       )}
 
-      <h2>Environmental Needs</h2>
+      <h3>Environmental Needs</h3>
       <p style={instructionStyle}>
         Does your patient need to negotiate any of these environmental obstacles?
       </p>
@@ -464,21 +612,37 @@ return `Microprocessor knee technology is medically necessary due to ${combinedB
         </>
       )}
 
-      <div style={{ marginTop: '20px' }}>
-        <button
-          onClick={clearAll}
-          style={{
-            padding: '10px 16px',
-            borderRadius: '6px',
-            border: 'none',
-            backgroundColor: '#444',
-            color: 'white',
-            cursor: 'pointer',
-          }}
-        >
-          Clear All
-        </button>
-      </div>
+      <div style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
+  <button
+    onClick={() => navigator.clipboard.writeText(noteText)}
+    style={{
+      padding: '10px 16px',
+      borderRadius: '6px',
+      border: 'none',
+      backgroundColor: '#007BFF',
+      color: 'white',
+      cursor: 'pointer',
+    }}
+  >
+    Copy Text
+  </button>
+
+  <button
+    onClick={clearAll}
+    style={{
+      padding: '10px 16px',
+      borderRadius: '6px',
+      border: 'none',
+      backgroundColor: '#444',
+      color: 'white',
+      cursor: 'pointer',
+    }}
+  >
+    Clear All
+  </button>
+</div>
+
+</div>
 
       <div
         style={{
@@ -488,12 +652,24 @@ return `Microprocessor knee technology is medically necessary due to ${combinedB
           borderRadius: '8px',
         }}
       >
-        <h2>Documentation Guidance for Coverage</h2>
-        <p>
-          <strong>K-Level:</strong> {kLevel}
-        </p>
-        <p>{kLevelSentence}</p>
+        <h2>History</h2>
+        {historySentence && <p>{historySentence}</p>}
+	<p>{kLevelSentence}</p>
+{answers.NEW_PROSTHETIC_USER === 'yes' && (
+  <p>
+    The patient presents as a new amputee requiring initial prosthetic intervention in order to regain as much of their pre-amputation functional capacity as possible.
+  </p>
+)}
         {physicalConditionSentence && <p>{physicalConditionSentence}</p>}
+	<h2>Documentation Guidance</h2>
+{!clinicalNeedsSentence &&
+ !environmentalSentence &&
+ !k2K3TechnologySentence &&
+ !closingSentence && (
+  <p>
+    At this time, no additional clinical or environmental considerations requiring specialized prosthetic intervention have been identified based on the information provided.
+  </p>
+)}
         {clinicalNeedsSentence && <p>{clinicalNeedsSentence}</p>}
         {environmentalSentence && <p>{environmentalSentence}</p>}
         {k2K3TechnologySentence && <p>{k2K3TechnologySentence}</p>}
