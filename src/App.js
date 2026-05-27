@@ -684,9 +684,10 @@ return `Microprocessor knee technology is medically necessary due to ${combinedB
           textAlign: 'center',
         }}
       >
-        ProsthetIQ Logic is intended for educational and clinical reference purposes only.
-        For more detailed information, please refer to the Medicare Local Coverage Determination (LCD)
-        and Policy Article currently in effect for lower-limb prosthetic components.
+        ProsthetIQ Logic is intended for educational and clinical reference purposes only. Use of this tool does not guarantee reimbursement or coverage determination. Final documentation, medical necessity determination, and claim submission responsibility remain with the treating clinician and supplier.
+<br />
+<br />
+For more detailed information, please refer to the Medicare Local Coverage Determination (LCD) and Policy Article currently in effect for lower-limb prosthetic components.
         <br />
         <br />
         View LCD L33787 – Lower Limb Prostheses (
